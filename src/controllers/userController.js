@@ -2,7 +2,11 @@ const UserModel= require("../models/userModel.js")
 
 const createUser= async function (req, res) {
     var data= req.body
+    data['freeAppUser'] = req['isFreeAppUser']
+   // console.log(data)
+    //console.log(req)
     let savedData= await UserModel.create(data)
+    console.log(savedData)
     res.send({msg: savedData})    
 }
 

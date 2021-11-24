@@ -15,6 +15,6 @@ router.get('/test-me', function (req, res) {
 router.post('/createUser', Middleware.validation, UserController.createUser  );
 router.get('/getAllUsers',  UserController.getUsersData  );
 router.post('/createProduct', ProductController.createProduct  );
-router.post('/createOrder', OrderController.createOrder);
+router.post('/createOrder',Middleware.validation, OrderController.createOrder);
 
 module.exports = router;
