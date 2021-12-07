@@ -4,6 +4,7 @@ const internModel = require("../models/internModel.js");
 const isValid = function (value, type) {
     if (typeof value === 'undefined' || value === null) return false
     if (typeof value === type && value.trim().length === 0) return false
+    if(typeof value != type ) return false
     return true;
 }
 const isValidRequestBody = function (requestBody) {
@@ -28,15 +29,15 @@ const registerCollege = async function (req, res) {
 
         // Validation starts
         if (!isValid(name, "string")) {
-            res.status(400).send({ status: false, message: 'Name is required' })
+            res.status(400).send({ status: false, message: 'Not a Valid Name or name is required' })
             return
         }
         if (!isValid(fullName, "string")) {
-            res.status(400).send({ status: false, message: 'Full name is required' })
+            res.status(400).send({ status: false, message: 'Not a Valid Full name or Full name is required' })
             return
         }
         if (!isValid(logoLink, "string")) {
-            res.status(400).send({ status: false, message: 'Logo link is required' })
+            res.status(400).send({ status: false, message: 'Not a Valid Logo  link or Logo Link is required' })
             return
         }
         const isNameAlreadyUsed = await CollegeModel.findOne({ name });
@@ -80,7 +81,8 @@ const collegeDetails = async function (req, res) {
         //console.log(collegedetail)
         const ID = collegedetail._id
         console.log(ID)
-        const interns = await internModel.find({ collegeId: ID,isDeleted:false }).select({ name: 1, email: 1, mobile: 1, _id: 0 })
+        const interns = await internModel.find({ 
+            collegeId: ID,isDeleted:false }).select({ name: 1, email: 1, mobile: 1, _id: 0 })
         //console.log(interns)
         if (interns.length === 0) {
             let arr = {

@@ -3,7 +3,8 @@
  
  const isValid = function(value) {
     if(typeof value === 'undefined' || value === null) return false
-    if(typeof value === 'string' && value.trim().length === 0) return false
+    if(typeof value === "string"  && value.trim().length === 0) return false
+  //  if(typeof value != type ) return false
     return true;
 }
 const isValidRequestBody = function(requestBody) {
@@ -17,39 +18,40 @@ const isValidRequestBody = function(requestBody) {
              res.status(400).send({status:false,message:'Invalid request parameters. Please provide intern details'})
          }
          //Extract params
-         const {name,email,mobile,collegeName} = requestBody;
+         let {name,email,mobile,collegeName} = requestBody;
          // validation starts
          if(!isValid(name)){
             res.status(400).send({status: false, message: 'Name is required'})
             return
          }
          if(!isValid(email)){
-            res.status(400).send({status: false, message: 'E-Mail is required'})
+            res.status(400).send({status: false, message: 'Not a Valid E-Mail or E-Mail is required'})
             return
          }
          
          //email validation
-
+         email = email.trim()
          if(!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
             res.status(400).send({status: false, message: `Email should be a valid email address`})
             return
         }
-
+        
+        
          if(!isValid(mobile)){
-            res.status(400).send({status: false, message: 'Mobile number is required'})
+            res.status(400).send({status: false, message: 'Not a valid Mobile number or Number  is required'})
             return
          }
-
+         
          //mobile validation
-         if(!(/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[6789]\d{9}$/.test(mobile))){
-            res.status(400).send({status: false, message: `Mobile number should be a valid email address`})
+         if(!(/^\d{10}$/.test(mobile))){
+            res.status(400).send({status: false, message: ` should be a valid mobile number`})
             return
         } 
          
          if(!isValid(collegeName)){
-            res.status(400).send({status: false, message: 'collegeName is required'})
+            res.status(400).send({status: false, message: 'Not a valid collegeName or collegeName is required'})
             return
-         }
+         } 
 
          const isEmailAlreadyUsed = await InternModel.findOne({email}); // {email: email} object shorthand property
 
@@ -60,12 +62,15 @@ const isValidRequestBody = function(requestBody) {
 
          const isMobileAlreadyUsed = await InternModel.findOne({mobile}); // {email: email} object shorthand property
 
-         if(isMobileAlreadyUsed) {
+         if(isMobileAlreadyUsed) { 
              res.status(400).send({status: false, message: `${mobile} mobile is already registered`})
              return
          }
          const collegeNames = req.body.collegeName
          const college = await CollegeModel.findOne({name:collegeNames}) 
+         if (!college) {
+            return res.status(404).send({ status: false, message: 'College details not found from your CollegeName' })
+        }
         // console.log(college)
          const iD = college._id 
          console.log(requestBody)
