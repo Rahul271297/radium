@@ -43,6 +43,7 @@ const isValidRequestBody = function(requestBody) {
          }
          
          //mobile validation
+         mobile = mobile.trim()
          if(!(/^\d{10}$/.test(mobile))){
             res.status(400).send({status: false, message: ` should be a valid mobile number`})
             return
@@ -73,12 +74,12 @@ const isValidRequestBody = function(requestBody) {
         }
         // console.log(college)
          const iD = college._id 
-         console.log(requestBody)
+         //console.log(requestBody)
           let collegeId = iD   //Mentor required 
          requestBody.collegeId = iD
          console.log(requestBody)
 
-         const internData = {name,email,mobile,collegeId }
+         const internData = {name,email,mobile,collegeId } //destructuring
          const newIntern = await InternModel.create(internData)
  
          res.status(201).send({status: true,message: `Intern created successfully`,data:newIntern});
