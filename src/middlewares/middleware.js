@@ -1,40 +1,27 @@
+const jwt = require('jsonwebtoken')
 
-const Jwt = require('jsonwebtoken')
-const emailValidation = async function (req, res, next) {
-    let data = req.body.email
-    if (data) {
-        const validEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-        if (data.match(validEmail)) {
-            next();
+const auth = async function(req,res,next){
+    try{
 
-        } else {
-            res.send({ msg: "Invalid email Id" })
-        }
-    } else {
-        res.send({ msg: "No Email Id" })
-    }
-}
-//*******************************middleware for valid token**********************
-
-
-const checkAuthentication = async function (req, res, next) {
-    let token = req.headers['x-api-key']
-    if (token) {
-        let validToken = Jwt.verify(token, 'radiumIrs')
-        console.log(validToken)
-        if (validToken) {
-            req.validToken = validToken
-            next()
+        let token=req.headers['x-api-key']
+        if(!token){
+            res.status(400).send({status:false,msg:"Not a valid token"})
+        }else{
+            let decodedToken = jwt.verify(token,"Jstar")
+            if(decodedToken.length != 0){
+                req.decodedToken = decodedToken;
+                next();
+            }else{
+                res.status(404).send({status:false,msg:"No token Found"})
+            }
         }
 
-        else {
-            res.send({ msg: 'not a valid token' })
-        }
+      
 
-
-    } else {
-        res.send({ msg: ' token missing' })
+        
+    }catch(error){
+        res.status(500).send({status:false,msg:error.message})
 
     }
 }
-module.exports = { emailValidation, checkAuthentication }
+module.exports={auth}
